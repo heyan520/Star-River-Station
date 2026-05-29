@@ -176,33 +176,7 @@
       </div>
     </main>
 
-    <!-- 底部导航栏 -->
-    <footer class="bottom-nav">
-      <div class="nav-item">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 576 512" fill="currentColor">
-          <path d="M575.8 255.5c0 18-15 32.1-32 32.1h-32l.7 160.2c0 2.7-.2 5.4-.5 8.1V472c0 22.1-17.9 40-40 40H456c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1H416 392c-22.1 0-40-17.9-40-40V448 384c0-17.7-14.3-32-32-32H256c-17.7 0-32 14.3-32 32v64 24c0 22.1-17.9 40-40 40H192 160c-1.4 0-2.8 0-4.2-.1c-1.1 .1-2.2 .1-3.3 .1H104c-22.1 0-40-17.9-40-40V440c0-.9 0-1.9 .1-2.8V287.6H32c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11.8 24z"/>
-        </svg>
-        <span>首页</span>
-      </div>
-      <div class="nav-item">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 448 512" fill="currentColor">
-          <path d="M128 0C110.3 0 96 14.3 96 32V96H48C21.5 96 0 117.5 0 144v48H48v288c0 26.5 21.5 48 48 48H352c26.5 0 48-21.5 48-48V192H448v-48c0-26.5-21.5-48-48-48H352V32c0-17.7-14.3-32-32-32H128zM208 160c44.2 0 80 35.8 80 80s-35.8 80-80 80s-80-35.8-80-80s35.8-80 80-80zm-64 256H112V272c0-8.8 7.2-16 16-16s16 7.2 16 16v144zm96 0H192V272c0-8.8 7.2-16 16-16s16 7.2 16 16v144zm96 0H288V272c0-8.8 7.2-16 16-16s16 7.2 16 16v144z"/>
-        </svg>
-        <span>商城</span>
-      </div>
-      <div class="nav-item">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 384 512" fill="currentColor">
-          <path d="M215.7 499.2C267 435 384 279.4 384 192C384 86 298 0 192 0S0 86 0 192c0 87.4 117 243 168.3 307.2c12.3 15.3 35.1 15.3 47.4 0zM192 256c-35.3 0-64-28.7-64-64s28.7-64 64-64s64 28.7 64 64s-28.7 64-64 64z"/>
-        </svg>
-        <span>附近</span>
-      </div>
-      <div class="nav-item">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 448 512" fill="currentColor">
-          <path d="M304 128a80 80 0 1 0 -160 0 80 80 0 1 0 160 0zM96 128a128 128 0 1 1 256 0A128 128 0 1 1 96 128zM49.3 464H398.7c-8.9-63.3-63.3-112-129.3-112H178.3c-66 0-120.3 48.7-129 112zM0 482.3C0 383.8 79.8 304 178.3 304h91.4C368.2 304 448 383.8 448 482.3V496c0 17.7-14.3 32-32 32H32c-17.7 0-32-14.3-32-32v-13.7z"/>
-        </svg>
-        <span>我的</span>
-      </div>
-    </footer>
+
   </div>
 </template>
 
@@ -438,9 +412,9 @@ onBeforeUnmount(() => {
 .app-container {
   max-width: 420px;
   margin: 0 auto;
-  height: 100vh;
+  min-height: 100vh;
   background-color: #f9f9f9;
-  overflow: hidden;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   position: relative;
@@ -494,7 +468,7 @@ onBeforeUnmount(() => {
 .main-content {
   position: fixed;
   top: 50px; 
-  bottom: 55px; /* 底部导航高度 */
+  bottom: 0; /* 移除底部导航高度限制 */
   left: 0;
   right: 0;
   max-width: 420px;
@@ -829,36 +803,7 @@ h3.font-bold {
   margin-top: 4px; 
 }
 
-/* 底部导航 */
-.bottom-nav {
-  height: 55px;
-  background-color: #fff;
-  display: flex;
-  border-top: 1px solid #eee;
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  max-width: 420px;
-  margin: 0 auto;
-  z-index: 100;
-}
-.nav-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #888;
-  font-size: 11px;
-  gap: 4px;
-}
-.nav-item i {
-  font-size: 20px;
-}
-.nav-item.active {
-  color: #4caf50;
-}
+
 /* 滚动条优化 */
 .main-content::-webkit-scrollbar {
   width: 4px;

@@ -20,7 +20,7 @@
     </div>
     
      <!-- 底部导航栏 -->
-    <div class="tab-bar">
+    <div class="tab-bar" v-if="showTabBar">
       <div 
         class="tab-item" 
         :class="{ active: $route.name === 'home' }"
@@ -31,11 +31,11 @@
       </div>
       <div 
         class="tab-item" 
-        :class="{ active: $route.name === 'equipment' }"
-        @click="switchTab('equipment')"
+        :class="{ active: $route.name === 'community' }"
+        @click="switchTab('community')"
       >
-        <i class="fas fa-shopping-bag"></i>
-        <span>商城</span>
+        <i class="fas fa-comments"></i>
+        <span>社区</span>
       </div>
       <div 
         class="tab-item" 
@@ -58,15 +58,21 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 
 // 使用Vue Router
 const router = useRouter()
+const route = useRoute()
 
 // Define missing ref
 const rightActionText = ref('')
 
+// 计算属性：是否显示底部导航栏
+const showTabBar = computed(() => {
+  const tabBarRoutes = ['home', 'community', 'nearby', 'profile']
+  return tabBarRoutes.includes(route.name)
+})
 
 const switchTab = (tab) => {
   router.push({ name: tab })

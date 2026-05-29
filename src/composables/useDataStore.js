@@ -9,7 +9,8 @@ const state = reactive({
     routes: new Set()
   },
   selectedCampsite: null,
-  selectedRoute: null
+  selectedRoute: null,
+  teams: []
 });
 
 // 状态管理函数
@@ -72,6 +73,62 @@ const dataStore = {
   // 设置当前选中的路线
   setSelectedRoute(id) {
     state.selectedRoute = routeService.getById(id);
+  },
+  
+  // 初始化组队信息
+  initTeams() {
+    // 从本地存储恢复组队信息
+    const savedTeams = localStorage.getItem('outdoor-teams');
+    if (savedTeams) {
+      try {
+        state.teams = JSON.parse(savedTeams);
+      } catch (error) {
+        console.error('Failed to parse saved teams:', error);
+      }
+    }
+  },
+  
+  // 保存组队信息到本地存储
+  saveTeams() {
+    localStorage.setItem('outdoor-teams', JSON.stringify(state.teams));
+  },
+  
+  // 添加新的组队信息
+  addTeam(teamInfo) {
+    const newTeam = {
+      id: Date.now(),
+      title: `${teamInfo.destination}${teamInfo.tripType}之旅`,
+      destination: teamInfo.destination,
+      date: teamInfo.startDate,
+      duration: `${teamInfo.startDate} 至 ${teamInfo.endDate}`,
+      cost: 0,
+      currentMembers: 1,
+      maxMembers: teamInfo.groupSize,
+      tags: teamInfo.activities,
+      description: `计划前往${teamInfo.destination}进行${teamInfo.tripType}，${teamInfo.activities.join('、')}等活动`,
+      organizer: {
+        name: '我',
+        level: '初级领队',
+        avatar: '/src/assets/头像.png'
+      },
+      members: [
+        {
+          id: 1,
+          name: '我',
+          avatar: '/src/assets/头像.png'
+        }
+      ],
+      ...teamInfo
+    };
+    
+    state.teams.unshift(newTeam);
+    this.saveTeams();
+    return newTeam;
+  },
+  
+  // 获取所有组队信息
+  getTeams() {
+    return state.teams;
   }
 };
 

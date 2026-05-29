@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50">
      <!-- 顶部导航  -->
-    <div class="bg-white shadow-sm px-4 py-3 flex items-center justify-between">
+    <div class="bg-white shadow-sm px-4 py-3 flex items-center justify-between sticky top-0 z-10">
       <button @click="goToPage('profile')" class="text-gray-600">
         <i class="fas fa-arrow-left text-lg"></i>
       </button>

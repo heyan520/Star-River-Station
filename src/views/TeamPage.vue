@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen bg-gray-50">
      <!-- 顶部导航  -->
-    <div class="bg-white shadow-sm px-4 py-3 flex items-center justify-between">
+    <div class="bg-white shadow-sm px-4 py-3 flex items-center justify-between sticky top-0 z-10">
       <button @click="goToPage('home')" class="text-gray-600">
         <i class="fas fa-arrow-left text-lg"></i>
       </button>
@@ -71,13 +71,15 @@
               ¥{{ activity.cost }}/人
             </div>
           </div>
-          <button @click="goToPage('team-application')" 
+          <button @click="activity.organizer.name === '我' ? goToPage('team-application') : goToPage('team-application')" 
                   :class="['px-4 py-2 rounded-lg text-sm font-medium',
-                           activity.currentMembers >= activity.maxMembers 
+                           activity.organizer.name === '我' 
+                           ? 'bg-blue-500 text-white' 
+                           : activity.currentMembers >= activity.maxMembers 
                            ? 'bg-gray-100 text-gray-400' 
                            : 'bg-primary-500 text-white']"
-                  :disabled="activity.currentMembers >= activity.maxMembers">
-            {{ activity.currentMembers >= activity.maxMembers ? '已满员' : '申请入队' }}
+                  :disabled="activity.organizer.name !== '我' && activity.currentMembers >= activity.maxMembers">
+            {{ activity.organizer.name === '我' ? '查看组队' : (activity.currentMembers >= activity.maxMembers ? '已满员' : '申请入队') }}
           </button>
         </div>
 
@@ -108,90 +110,105 @@
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import useDataStore from '../composables/useDataStore.js'
 
 const router = useRouter()
+const dataStore = useDataStore()
 
 const goToPage = (routeName) => {
   router.push({ name: routeName })
 }
 
 const filters = ref(['全部', '自驾游', '徒步', '露营', '登山', '摄影'])
+const activities = ref([])
 
-const activities = ref([
-  {
-    id: 1,
-    title: '武隆天坑探险之旅',
-    destination: '重庆武隆天生三桥',
-    date: '3月25日',
-    duration: '2天1夜',
-    cost: 380,
-    currentMembers: 3,
-    maxMembers: 6,
-    tags: ['探险', '摄影', '自然'],
-    description: '探索武隆天坑的神秘魅力，体验大自然的鬼斧神工。行程包括天生三桥、龙水峡地缝等著名景点，适合喜欢探险和摄影的朋友。',
-    organizer: {
-      name: '户外达人小王',
-      level: '资深领队',
-      avatar: '/placeholder.svg?height=50&width=50'
+onMounted(() => {
+  // 初始化组队信息
+  dataStore.initTeams()
+  // 获取用户发布的组队信息
+  const userTeams = dataStore.getTeams()
+  
+  // 默认组队信息
+  const defaultTeams = [
+    {
+      id: 1,
+      title: '武隆天坑探险之旅',
+      destination: '重庆武隆天生三桥',
+      date: '3月25日',
+      duration: '2天1夜',
+      cost: 380,
+      currentMembers: 3,
+      maxMembers: 6,
+      tags: ['探险', '摄影', '自然'],
+      description: '探索武隆天坑的神秘魅力，体验大自然的鬼斧神工。行程包括天生三桥、龙水峡地缝等著名景点，适合喜欢探险和摄影的朋友。',
+      organizer: {
+        name: '户外达人小王',
+        level: '资深领队',
+        avatar: '/src/assets/头像.png'
+      },
+      members: [
+        { id: 1, name: '小李', avatar: '/src/assets/头像.png' },
+        { id: 2, name: '小张', avatar: '/src/assets/头像.png' },
+        { id: 3, name: '小陈', avatar: '/src/assets/头像.png' }
+      ]
     },
-    members: [
-      { id: 1, name: '小李', avatar: '/placeholder.svg?height=30&width=30' },
-      { id: 2, name: '小张', avatar: '/placeholder.svg?height=30&width=30' },
-      { id: 3, name: '小陈', avatar: '/placeholder.svg?height=30&width=30' }
-    ]
-  },
-  {
-    id: 2,
-    title: '仙女山草原露营',
-    destination: '重庆武隆仙女山',
-    date: '4月1日',
-    duration: '1天1夜',
-    cost: 220,
-    currentMembers: 5,
-    maxMembers: 8,
-    tags: ['露营', '观星', '草原'],
-    description: '在仙女山大草原上搭帐篷，享受星空下的浪漫夜晚。包含篝火晚会、观星活动，适合情侣和朋友聚会。',
-    organizer: {
-      name: '露营专家小刘',
-      level: '中级领队',
-      avatar: '/placeholder.svg?height=50&width=50'
+    {
+      id: 2,
+      title: '仙女山草原露营',
+      destination: '重庆武隆仙女山',
+      date: '4月1日',
+      duration: '1天1夜',
+      cost: 220,
+      currentMembers: 5,
+      maxMembers: 8,
+      tags: ['露营', '观星', '草原'],
+      description: '在仙女山大草原上搭帐篷，享受星空下的浪漫夜晚。包含篝火晚会、观星活动，适合情侣和朋友聚会。',
+      organizer: {
+        name: '露营专家小刘',
+        level: '中级领队',
+        avatar: '/src/assets/头像.png'
+      },
+      members: [
+        { id: 4, name: '小王', avatar: '/src/assets/头像.png' },
+        { id: 5, name: '小赵', avatar: '/src/assets/头像.png' },
+        { id: 6, name: '小孙', avatar: '/src/assets/头像.png' },
+        { id: 7, name: '小周', avatar: '/src/assets/头像.png' },
+        { id: 8, name: '小吴', avatar: '/src/assets/头像.png' }
+      ]
     },
-    members: [
-      { id: 4, name: '小王', avatar: '/placeholder.svg?height=30&width=30' },
-      { id: 5, name: '小赵', avatar: '/placeholder.svg?height=30&width=30' },
-      { id: 6, name: '小孙', avatar: '/placeholder.svg?height=30&width=30' },
-      { id: 7, name: '小周', avatar: '/placeholder.svg?height=30&width=30' },
-      { id: 8, name: '小吴', avatar: '/placeholder.svg?height=30&width=30' }
-    ]
-  },
-  {
-    id: 3,
-    title: '芙蓉洞地下探秘',
-    destination: '重庆武隆芙蓉洞',
-    date: '4月8日',
-    duration: '1天',
-    cost: 150,
-    currentMembers: 8,
-    maxMembers: 8,
-    tags: ['溶洞', '探秘', '地质'],
-    description: '深入芙蓉洞探索地下奇观，了解喀斯特地貌的形成过程。专业地质讲解，适合对地质学感兴趣的朋友。',
-    organizer: {
-      name: '地质爱好者小张',
-      level: '初级领队',
-      avatar: '/placeholder.svg?height=50&width=50'
-    },
-    members: [
-      { id: 9, name: '小郑', avatar: '/placeholder.svg?height=30&width=30' },
-      { id: 10, name: '小钱', avatar: '/placeholder.svg?height=30&width=30' },
-      { id: 11, name: '小孙', avatar: '/placeholder.svg?height=30&width=30' },
-      { id: 12, name: '小李', avatar: '/placeholder.svg?height=30&width=30' },
-      { id: 13, name: '小周', avatar: '/placeholder.svg?height=30&width=30' },
-      { id: 14, name: '小吴', avatar: '/placeholder.svg?height=30&width=30' },
-      { id: 15, name: '小郑', avatar: '/placeholder.svg?height=30&width=30' },
-      { id: 16, name: '小王', avatar: '/placeholder.svg?height=30&width=30' }
-    ]
-  }
-])
+    {
+      id: 3,
+      title: '芙蓉洞地下探秘',
+      destination: '重庆武隆芙蓉洞',
+      date: '4月8日',
+      duration: '1天',
+      cost: 150,
+      currentMembers: 8,
+      maxMembers: 8,
+      tags: ['溶洞', '探秘', '地质'],
+      description: '深入芙蓉洞探索地下奇观，了解喀斯特地貌的形成过程。专业地质讲解，适合对地质学感兴趣的朋友。',
+      organizer: {
+        name: '地质爱好者小张',
+        level: '初级领队',
+        avatar: '/src/assets/头像.png'
+      },
+      members: [
+        { id: 9, name: '小郑', avatar: '/src/assets/头像.png' },
+        { id: 10, name: '小钱', avatar: '/src/assets/头像.png' },
+        { id: 11, name: '小孙', avatar: '/src/assets/头像.png' },
+        { id: 12, name: '小李', avatar: '/src/assets/头像.png' },
+        { id: 13, name: '小周', avatar: '/src/assets/头像.png' },
+        { id: 14, name: '小吴', avatar: '/src/assets/头像.png' },
+        { id: 15, name: '小郑', avatar: '/src/assets/头像.png' },
+        { id: 16, name: '小王', avatar: '/src/assets/头像.png' }
+      ]
+    }
+  ]
+  
+  // 合并用户发布的组队信息和默认组队信息
+  // 用户发布的在前面
+  activities.value = [...userTeams, ...defaultTeams]
+})
 </script>

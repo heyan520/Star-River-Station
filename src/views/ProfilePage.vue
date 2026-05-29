@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="min-h-screen bg-gray-50 pb-16">
     <!-- 顶部个人信息  -->
     <div class="bg-gradient-to-br from-primary-500 to-primary-600 px-4 py-6 text-white">
       <div class="flex items-center space-x-4 mb-4">
@@ -78,35 +78,35 @@
         </div>
       </div>
 
-      <!-- 我的订单  -->
+      <!-- 我的社区  -->
       <div class="bg-white rounded-lg overflow-hidden">
         <div class="px-4 py-3  border-gray-100">
-          <h3 class="font-medium text-gray-800">我的订单</h3>
+          <h3 class="font-medium text-gray-800">我的社区</h3>
         </div>
         <div class="grid grid-cols-4 gap-4 mb-6">
-          <div class="flex flex-col items-center">
+          <div class="flex flex-col items-center" @click="goToPage('my-posts')">
             <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-2">
-              <i class="fas fa-shopping-bag text-secondary-600"></i>
+              <i class="fas fa-edit text-blue-600"></i>
             </div>
-            <span class="text-sm">待付款</span>
+            <span class="text-sm">我的帖子</span>
           </div>
-          <div class="flex flex-col items-center">
+          <div class="flex flex-col items-center" @click="goToPage('my-guides')">
             <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-2">
-              <i class="fas fa-truck text-green-600"></i>
+              <i class="fas fa-map text-green-600"></i>
             </div>
-            <span class="text-sm">待发货</span>
+            <span class="text-sm">我的攻略</span>
           </div>
-          <div class="flex flex-col items-center">
+          <div class="flex flex-col items-center" @click="goToPage('my-comments')">
             <div class="w-12 h-12 rounded-full bg-yellow-100 flex items-center justify-center mb-2">
-              <i class="fas fa-box-open text-yellow-600"></i>
+              <i class="fas fa-comment text-yellow-600"></i>
             </div>
-            <span class="text-sm">待收货</span>
+            <span class="text-sm">我的评论</span>
           </div>
-          <div class="flex flex-col items-center" @click="goToPage('orders')">
+          <div class="flex flex-col items-center" @click="goToPage('my-bookmarks')">
             <div class="w-12 h-12 rounded-full bg-purple-100 flex items-center justify-center mb-2">
-              <i class="fas fa-list text-purple-600"></i>
+              <i class="fas fa-bookmark text-purple-600"></i>
             </div>
-            <span class="text-sm">全部订单</span>
+            <span class="text-sm">我的收藏</span>
           </div>
         </div>
       </div>
@@ -157,9 +157,6 @@ const router = useRouter()
 
 const goToPage = (routeName) => {
   router.push({ name: routeName })
-}
-const goToorders = (orders) => {
-  router.push({ name: orders })
 }
 
 

@@ -86,25 +86,7 @@
       </div>
     </main>
     
-    <!-- 底部导航栏 -->
-    <footer class="bottom-nav">
-      <div class="nav-item">
-        <i class="fas fa-home"></i>
-        <span>首页</span>
-      </div>
-      <div class="nav-item">
-        <i class="fas fa-shopping-bag"></i>
-        <span>商城</span>
-      </div>
-      <div class="nav-item">
-        <i class="fas fa-map-marker-alt"></i>
-        <span>附近</span>
-      </div>
-      <div class="nav-item">
-        <i class="fas fa-user"></i>
-        <span>我的</span>
-      </div>
-    </footer>
+
   </div>
 </template>
 
@@ -307,10 +289,10 @@ html, body {
 .app-container {
   max-width: 420px;
   margin: 0 auto;
-  height: 100vh;
+  min-height: 100vh;
   background-color: #f9f9f9;
   position: relative;
-  overflow: hidden;
+  overflow-y: auto;
 }
 
 /* 顶部导航 */
@@ -368,7 +350,7 @@ html, body {
 .main-content {
   position: absolute;
   top: 50px; /* 顶部导航高度 */
-  bottom: 55px; /* 底部导航高度 */
+  bottom: 0;
   left: 0;
   right: 0;
   overflow-y: auto;
@@ -543,39 +525,7 @@ html, body {
   cursor: pointer;
 }
 
-/* 底部导航 */
-.bottom-nav {
-  height: 55px;
-  background-color: #fff;
-  display: flex;
-  border-top: 1px solid #eee;
-  position: fixed;
-  bottom: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 100%;
-  max-width: 420px;
-  z-index: 100;
-}
 
-.nav-item {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  color: #888;
-  font-size: 11px;
-  gap: 4px;
-}
-
-.nav-item i {
-  font-size: 20px;
-}
-
-.nav-item.active {
-  color: #4caf50;
-}
 
 /* 滚动条优化 */
 .main-content::-webkit-scrollbar {
@@ -667,13 +617,9 @@ html, body {
     height: 45px;
   }
   
-  .bottom-nav {
-    height: 50px;
-  }
-  
   .main-content {
     top: 45px;
-    bottom: 50px;
+    bottom: 0;
   }
 }
 

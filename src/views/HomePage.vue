@@ -1,5 +1,5 @@
 <template>
-  <div class="p-5 h-full overflow-y-auto">
+  <div class="p-5 h-full overflow-y-auto pb-16">
          <div class="location-weather-container">
        <div class="location-weather">
           <i class="fas fa-location-dot text-primary-600 mr-1"></i>

@@ -97,15 +97,15 @@ onUnmounted(() => {
 <style scoped>
 .vr-container {
   width: 100%;
-  height: 100vh;
-  overflow: hidden;
+  min-height: 100vh;
+  overflow-y: auto;
   position: relative;
   padding-top: 50px; /* 为顶部导航栏留出空间 */
 }
 
 .vr-iframe {
   width: 100%;
-  height: 100%;
+  height: calc(100vh - 50px);
   border: none;
 }
 

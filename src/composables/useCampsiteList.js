@@ -182,11 +182,11 @@ export function useCampsiteList() {
     console.log('有效位置的露营地数量:', validCampsites.length);
     
     const markers = validCampsites.map(campsite => {
-      console.log('为露营地创建标记:', campsite.name, '坐标:', campsite.position);
+      console.log('为露营地创建标记:', campsite.title, '坐标:', campsite.position);
       return new window.AMap.Marker({
         position: campsite.position,
         title: campsite.title || campsite.name,
-        content: `<div style="width:25px;height:25px;border-radius:50%;background-color:#4285f4;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;">${campsite.name ? campsite.name.charAt(0) : '?'}</div>`
+        content: `<div style="width:25px;height:25px;border-radius:50%;background-color:#4285f4;color:white;display:flex;align-items:center;justify-content:center;font-weight:bold;">${(campsite.title || campsite.name) ? (campsite.title || campsite.name).charAt(0) : '?'}</div>`
       });
     });
 

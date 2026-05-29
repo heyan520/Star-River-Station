@@ -1,117 +1,114 @@
 <template>
-  <div class="min-h-screen bg-gray-50">
+  <div class="community-page">
     <!-- 顶部导航栏 -->
-    <div class="bg-white shadow-sm px-4 py-3 flex items-center justify-between">
-      <h2 class="text-lg font-medium text-gray-800">户外社区</h2>
-      <div class="flex items-center space-x-4">
-        <button class="text-gray-600">
-          <i class="fas fa-search text-lg"></i>
-        </button>
-        <button @click="goToPostPage" class="bg-primary-500 text-white px-3 py-1 rounded-full text-sm">
-          发贴
+    <div class="community-header">
+      <h1 class="community-title">社区</h1>
+      <div class="header-actions">
+        <button class="create-button" @click="navigateToCreateContent">
+          <i class="fas fa-plus"></i>
         </button>
       </div>
     </div>
 
-    <!-- 分类标签 -->
-    <div class="bg-white px-4 py-3 border-b overflow-x-auto">
-      <div class="flex space-x-3 min-w-max">
-        <button 
-          v-for="category in categories" 
-          :key="category.id"
-          :class="['flex items-center px-4 py-2 rounded-full text-sm whitespace-nowrap transition-all', 
-                   selectedCategory === category.id ? 'bg-primary-500 text-white shadow-sm' : 'bg-gray-100 text-gray-600 hover:bg-gray-200']"
-          @click="selectCategory(category.id)"
-        >
-          <i :class="[category.icon, 'mr-1']"></i>
-          {{ category.name }}
-        </button>
-      </div>
-    </div>
-
-    <!-- 排序选项 -->
-    <div class="bg-white px-4 py-3 border-b flex items-center space-x-4">
+    <!-- 内容类型切换 -->
+    <div class="content-tabs">
       <button 
-        v-for="sortOption in sortOptions" 
-        :key="sortOption.id"
-        :class="['text-sm transition-all', 
-                 selectedSort === sortOption.id ? 'text-primary-500 font-medium' : 'text-gray-600 hover:text-primary-500']"
-        @click="selectSort(sortOption.id)"
+        class="tab-button" 
+        :class="{ active: activeTab === 'all' }"
+        @click="activeTab = 'all'"
       >
-        {{ sortOption.name }}
+        全部
+      </button>
+      <button 
+        class="tab-button" 
+        :class="{ active: activeTab === 'guide' }"
+        @click="activeTab = 'guide'"
+      >
+        攻略
+      </button>
+      <button 
+        class="tab-button" 
+        :class="{ active: activeTab === 'forum' }"
+        @click="activeTab = 'forum'"
+      >
+        论坛
       </button>
     </div>
 
-    <!-- 帖子列表 -->
-    <div class="bg-white">
-      <div 
-        v-for="post in filteredPosts" 
-        :key="post.id"
-        class="border-b border-gray-100 p-4 hover:bg-gray-50 transition-colors"
+    <!-- 分类筛选 -->
+    <div class="category-filter">
+      <button 
+        v-for="category in categories" 
+        :key="category.id"
+        class="category-button"
+        :class="{ active: selectedCategory === category.id }"
+        @click="selectedCategory = category.id"
       >
-        <div class="flex items-start space-x-3">
-          <!-- 用户头像和信息 -->
-          <div class="flex-shrink-0">
-            <img :src="post.userAvatar" :alt="post.userName" class="w-10 h-10 rounded-full object-cover">
-          </div>
-          
-          <!-- 帖子内容 -->
-          <div class="flex-1">
-            <!-- 用户名和时间 -->
-            <div class="flex items-center justify-between mb-2">
-              <div class="flex items-center">
-                <h3 class="font-medium text-gray-800">{{ post.userName }}</h3>
-                <span v-if="post.userTitle" class="ml-2 bg-primary-100 text-primary-600 px-2 py-0.5 rounded text-xs">{{ post.userTitle }}</span>
-              </div>
-              <span class="text-xs text-gray-500">{{ post.postTime }}</span>
-            </div>
-            
-            <!-- 帖子标题和正文 -->
-            <h4 class="font-medium text-gray-800 mb-2">{{ post.title }}</h4>
-            <p class="text-gray-600 text-sm mb-3">{{ post.content }}</p>
-            
-            <!-- 帖子图片 -->
-            <div v-if="post.images && post.images.length > 0" class="mb-3">
-              <div class="grid grid-cols-3 gap-1">
-                <img 
-                  v-for="(image, index) in (post.images.length > 3 ? post.images.slice(0, 3) : post.images)" 
-                  :key="index"
-                  :src="image" 
-                  :alt="'Post image ' + (index + 1)"
-                  class="rounded-lg object-cover aspect-square"
-                  :style="{ height: '80px' }"
-                >
-                <div v-if="post.images.length > 3" 
-                     class="rounded-lg bg-black bg-opacity-50 flex items-center justify-center aspect-square"
-                     :style="{ height: '80px' }"
-                >
-                  <span class="text-white text-sm">+{{ post.images.length - 3 }}</span>
-                </div>
+        {{ category.name }}
+      </button>
+    </div>
+
+    <!-- 内容列表 -->
+    <div class="content-list">
+      <div 
+        v-for="item in filteredContent" 
+        :key="item.id"
+        class="content-item"
+        @click="navigateToContentDetail(item.id, item.type)"
+      >
+        <!-- 攻略类型 -->
+        <div v-if="item.type === 'guide'" class="guide-card">
+          <div class="guide-image" :style="{ backgroundImage: `url(${item.images[0]})` }"></div>
+          <div class="guide-content">
+            <div class="guide-tag">攻略</div>
+            <h3 class="guide-title">{{ item.title }}</h3>
+            <p class="guide-description">{{ item.description }}</p>
+            <div class="guide-meta">
+              <span class="guide-destination">{{ item.guideInfo.destination }}</span>
+              <span class="guide-duration">{{ item.guideInfo.duration }}</span>
+              <div class="guide-stats">
+                <span><i class="fas fa-eye"></i> {{ item.guideInfo.views }}</span>
+                <span><i class="fas fa-heart"></i> {{ item.guideInfo.likes }}</span>
+                <span><i class="fas fa-bookmark"></i> {{ item.guideInfo.favorites }}</span>
               </div>
             </div>
-            
-            <!-- 互动数据 -->
-            <div class="flex items-center justify-between text-gray-500 text-sm">
-              <div class="flex items-center space-x-4">
-                <button class="flex items-center space-x-1 hover:text-primary-500">
-                  <i class="fas fa-heart"></i>
-                  <span>{{ post.likes }}</span>
-                </button>
-                <button class="flex items-center space-x-1 hover:text-primary-500">
-                  <i class="fas fa-comment"></i>
-                  <span>{{ post.comments }}</span>
-                </button>
-                <button class="flex items-center space-x-1 hover:text-primary-500">
-                  <i class="fas fa-bookmark"></i>
-                  <span>{{ post.bookmarks }}</span>
-                </button>
-              </div>
-              <button class="hover:text-primary-500">
-                <i class="fas fa-share"></i>
-              </button>
+            <div class="guide-author">
+              <img :src="item.author.avatar" alt="作者头像" class="author-avatar">
+              <span class="author-name">{{ item.author.name }}</span>
+              <span class="author-level">{{ item.author.level }}</span>
             </div>
           </div>
         </div>
+
+        <!-- 论坛帖子类型 -->
+        <div v-else-if="item.type === 'forum'" class="forum-card">
+          <div class="forum-content">
+            <div class="forum-tag">论坛</div>
+            <h3 class="forum-title">{{ item.title }}</h3>
+            <p class="forum-description">{{ item.description }}</p>
+            <div class="forum-meta">
+              <div class="forum-stats">
+                <span><i class="fas fa-eye"></i> {{ item.forumInfo.views }}</span>
+                <span><i class="fas fa-comment"></i> {{ item.forumInfo.replies }}</span>
+              </div>
+              <span class="forum-time">{{ item.forumInfo.lastReplyTime }}</span>
+            </div>
+            <div class="forum-author">
+              <img :src="item.author.avatar" alt="作者头像" class="author-avatar">
+              <span class="author-name">{{ item.author.name }}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 悬浮AI小助手按钮 -->
+    <div class="floating-assistant-container">
+      <div class="speech-bubble">
+        <span>需要智能助手帮忙吗</span>
+      </div>
+      <div class="floating-assistant" @click="navigateToAIAssistant">
+        <img src="/AI小助手.png" alt="AI小助手" class="ai-image">
       </div>
     </div>
   </div>
@@ -123,115 +120,523 @@ import { useRouter } from 'vue-router'
 
 const router = useRouter()
 
-// 分类数据
-const categories = ref([
-  { id: 'all', name: '全部', icon: 'fas fa-th-large' },
-  { id: 'hiking', name: '徒步', icon: 'fas fa-hiking' },
-  { id: 'camping', name: '露营', icon: 'fas fa-campground' },
-  { id: 'travel', name: '旅行', icon: 'fas fa-plane' },
-  { id: 'photography', name: '摄影', icon: 'fas fa-camera' },
-  { id: 'parenting', name: '亲子', icon: 'fas fa-users' },
-  { id: 'equipment', name: '装备', icon: 'fas fa-backpack' },
-  { id: 'qa', name: '问答', icon: 'fas fa-question-circle' }
-])
-
-// 排序选项
-const sortOptions = ref([
-  { id: 'latest', name: '最新' },
-  { id: 'hottest', name: '最热' },
-  { id: 'recommended', name: '推荐' }
-])
-
-// 当前选中的分类和排序
+// 状态管理
+const activeTab = ref('all')
 const selectedCategory = ref('all')
-const selectedSort = ref('latest')
 
-// 帖子数据（模拟）
-const posts = ref([
+// 分类数据
+const categories = [
+  { id: 'all', name: '全部' },
+  { id: 'camping', name: '露营' },
+  { id: 'hiking', name: '徒步' },
+  { id: 'driving', name: '自驾游' },
+  { id: 'equipment', name: '装备' }
+]
+
+// 模拟内容数据
+const contentData = [
   {
     id: 1,
-    userId: 1,
-    userName: '户外老杨',
-    userAvatar: 'https://picsum.photos/seed/user1/100/100',
-    userTitle: '徒步圈',
-    title: '贡嘎环线5天4晚轻装徒步全攻略',
-    content: '新手友好型贡嘎徒步路线，避开高反路段，每日行程控制在8公里内。必备装备：防滑登山鞋、羽绒服或冲锋衣、能量补给...',
-    images: [
-      'https://picsum.photos/seed/hiking1/800/600',
-      'https://picsum.photos/seed/hiking2/800/600',
-      'https://picsum.photos/seed/hiking3/800/600'
-    ],
-    categoryId: 'hiking',
-    postTime: '2小时前',
-    likes: 128,
-    comments: 42,
-    bookmarks: 56
+    type: 'guide',
+    title: '武隆仙女山2日自驾游攻略',
+    description: '详细的仙女山自驾游路线、住宿、美食推荐，适合周末出行',
+    images: ['/assets/仙女山-天生三桥环线.png'],
+    guideInfo: {
+      destination: '武隆仙女山',
+      duration: '2天1夜',
+      views: 528,
+      likes: 128,
+      favorites: 86
+    },
+    author: {
+      id: 1,
+      name: '户外达人小王',
+      avatar: '/assets/头像.png',
+      level: '资深攻略作者'
+    }
   },
   {
     id: 2,
-    userId: 2,
-    userName: '露营达人小王',
-    userAvatar: 'https://picsum.photos/seed/user2/100/100',
-    userTitle: '露营推荐官',
-    title: '重庆周边5个绝美露营地推荐',
-    content: '周末不想去太远？这里有重庆周边5个绝美露营地推荐，适合家庭和朋友聚会，有的还可以看到星空哦！',
-    images: [
-      'https://picsum.photos/seed/camping1/800/600',
-      'https://picsum.photos/seed/camping2/800/600'
-    ],
-    categoryId: 'camping',
-    postTime: '5小时前',
-    likes: 96,
-    comments: 28,
-    bookmarks: 41
+    type: 'forum',
+    title: '大家推荐一下重庆周边适合露营的地方',
+    description: '想找个周末和朋友一起去露营，有没有好的推荐？最好交通方便，设施齐全的地方。',
+    forumInfo: {
+      views: 320,
+      replies: 15,
+      lastReplyTime: '2026-04-01 16:30'
+    },
+    author: {
+      id: 2,
+      name: '户外爱好者',
+      avatar: '/src/assets/头像.png'
+    }
   },
   {
     id: 3,
-    userId: 3,
-    userName: '摄影爱好者小李',
-    userAvatar: 'https://picsum.photos/seed/user3/100/100',
-    title: '川西摄影之旅，记录最美秋景',
-    content: '川西的秋天太美了，分享一些摄影技巧和最佳拍摄地点，希望大家都能拍出好看的照片。',
-    images: [
-      'https://picsum.photos/seed/photography1/800/600',
-      'https://picsum.photos/seed/photography2/800/600',
-      'https://picsum.photos/seed/photography3/800/600',
-      'https://picsum.photos/seed/photography4/800/600'
-    ],
-    categoryId: 'photography',
-    postTime: '1天前',
-    likes: 156,
-    comments: 35,
-    bookmarks: 72
-  }
-])
-
-// 筛选后的帖子
-const filteredPosts = computed(() => {
-  return posts.value.filter(post => {
-    if (selectedCategory.value === 'all') {
-      return true
+    type: 'guide',
+    title: '南川金佛山徒步攻略',
+    description: '金佛山经典徒步路线，包含路况、装备建议和注意事项',
+    images: ['/assets/南川178环线.png'],
+    guideInfo: {
+      destination: '南川金佛山',
+      duration: '1天',
+      views: 312,
+      likes: 89,
+      favorites: 56
+    },
+    author: {
+      id: 3,
+      name: '徒步爱好者',
+      avatar: '/assets/头像.png',
+      level: '攻略作者'
     }
-    return post.categoryId === selectedCategory.value
-  })
+  },
+  {
+    id: 4,
+    type: 'forum',
+    title: '新手露营装备推荐',
+    description: '第一次露营，需要准备哪些装备？预算1000元左右，有什么推荐的吗？',
+    forumInfo: {
+      views: 456,
+      replies: 23,
+      lastReplyTime: '2026-04-02 10:15'
+    },
+    author: {
+      id: 4,
+      name: '露营新手',
+      avatar: '/src/assets/头像.png'
+    }
+  }
+]
+
+// 筛选内容
+const filteredContent = computed(() => {
+  let result = contentData
+  
+  // 按类型筛选
+  if (activeTab.value !== 'all') {
+    result = result.filter(item => item.type === activeTab.value)
+  }
+  
+  // 按分类筛选（这里简化处理，实际应该根据内容的tags或category字段筛选）
+  if (selectedCategory.value !== 'all') {
+    // 这里只是示例，实际需要根据具体分类逻辑筛选
+    result = result
+  }
+  
+  return result
 })
 
-// 选择分类
-const selectCategory = (categoryId) => {
-  selectedCategory.value = categoryId
+// 导航到内容详情页
+const navigateToContentDetail = (id, type) => {
+  router.push({
+    name: 'content-detail',
+    params: { id, type }
+  })
 }
 
-// 选择排序
-const selectSort = (sortId) => {
-  selectedSort.value = sortId
+// 导航到发布内容页面
+const navigateToCreateContent = () => {
+  router.push({ name: 'create-content' })
 }
 
-// 跳转发贴页面
-const goToPostPage = () => {
-  router.push({ name: 'post' })
+// 导航到AI小助手页面
+const navigateToAIAssistant = () => {
+  router.push({ name: 'ai-assistant' })
 }
 </script>
 
 <style scoped>
-/* 自定义样式可以在这里添加 */
+.community-page {
+  min-height: 100vh;
+  background: linear-gradient(to bottom, #f5f7fa, #e4f1fe);
+  padding-bottom: 60px;
+}
+
+.community-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  background: white;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.community-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.create-button {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #4CAF50;
+  color: white;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  transition: all 0.2s ease;
+}
+
+.create-button:hover {
+  background: #45a049;
+  transform: scale(1.05);
+}
+
+.content-tabs {
+  display: flex;
+  background: white;
+  margin: 12px 16px;
+  border-radius: 12px;
+  padding: 4px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.tab-button {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tab-button.active {
+  background: #4CAF50;
+  color: white;
+}
+
+.category-filter {
+  display: flex;
+  overflow-x: auto;
+  padding: 0 16px 12px;
+  gap: 8px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.category-filter::-webkit-scrollbar {
+  display: none;
+}
+
+.category-button {
+  padding: 6px 12px;
+  border: 1px solid #e0e0e0;
+  background: white;
+  border-radius: 16px;
+  font-size: 12px;
+  color: #666;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.category-button.active {
+  background: #4CAF50;
+  color: white;
+  border-color: #4CAF50;
+}
+
+.content-list {
+  padding: 0 16px;
+  gap: 16px;
+  display: flex;
+  flex-direction: column;
+}
+
+.content-item {
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.content-item:hover {
+  transform: translateY(-2px);
+}
+
+.guide-card {
+  background: white;
+  border-radius: 16px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.guide-image {
+  height: 180px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+}
+
+.guide-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #4CAF50;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.guide-content {
+  padding: 16px;
+  position: relative;
+  padding-top: 36px; /* 为标签留出空间 */
+}
+
+.guide-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.guide-description {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.guide-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+  align-items: center;
+}
+
+.guide-destination {
+  background: #f0f9ff;
+  color: #3b82f6;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.guide-duration {
+  background: #f0fdf4;
+  color: #22c55e;
+  padding: 2px 8px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.guide-stats {
+  display: flex;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.guide-stats span {
+  font-size: 12px;
+  color: #999;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.guide-author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.author-avatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.author-name {
+  font-size: 12px;
+  color: #333;
+  font-weight: 500;
+}
+
+.author-level {
+  font-size: 10px;
+  color: #999;
+  background: #f5f5f5;
+  padding: 1px 6px;
+  border-radius: 8px;
+}
+
+.forum-card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+  position: relative;
+  padding-top: 36px; /* 为标签留出空间 */
+}
+
+.forum-tag {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #3b82f6;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.forum-title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #333;
+  margin: 0 0 8px 0;
+  line-height: 1.4;
+}
+
+.forum-description {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 12px 0;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.forum-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.forum-stats {
+  display: flex;
+  gap: 12px;
+}
+
+.forum-stats span {
+  font-size: 12px;
+  color: #999;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.forum-time {
+  font-size: 12px;
+  color: #999;
+}
+
+.forum-author {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-top: 12px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.floating-assistant-container {
+  position: fixed;
+    top: 155px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  z-index: 100;
+}
+
+.speech-bubble {
+  background: white;
+  border-radius: 16px;
+  padding: 10px 16px;
+  margin-bottom: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  max-width: 200px;
+  position: relative;
+}
+
+.speech-bubble::after {
+  content: '';
+  position: absolute;
+  bottom: -6px;
+  right: 12px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid white;
+}
+
+.speech-bubble span {
+  font-size: 14px;
+  color: #333;
+  line-height: 1.4;
+}
+
+.floating-assistant {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.floating-assistant:hover {
+  transform: scale(1.1);
+}
+
+.ai-image {
+  width: auto;
+  height: auto;
+}
+
+@media (max-width: 768px) {
+  .community-header {
+    padding: 12px 16px;
+  }
+  
+  .guide-image {
+    height: 150px;
+  }
+  
+  .content-list {
+    padding: 0 12px;
+  }
+  
+  .floating-assistant {
+    bottom: 65px;
+    right: 16px;
+    width: 50px;
+    height: 50px;
+    font-size: 20px;
+  }
+}
 </style>
