@@ -3,9 +3,6 @@
     <!-- 顶部搜索栏 -->
     <div class="bg-white shadow-sm px-4 py-3 sticky top-0 z-10">
       <div class="flex items-center space-x-3">
-        <button @click="goToPage('home')" class="text-gray-600">
-          <i class="fas fa-arrow-left text-lg"></i>
-        </button>
         <div class="flex-1 relative">
           <input 
             type="text" 

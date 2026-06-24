@@ -13,6 +13,8 @@ import TeamCreatePage from '../views/TeamCreatePage.vue';
 import TeamApplicationPage from '../views/TeamApplicationPage.vue';
 import NearbyPage from '../views/NearbyPage.vue';
 import ProfilePage from '../views/ProfilePage.vue';
+import PostDetailPage from '../views/PostDetailPage.vue';
+import AllPostsPage from '../views/AllPostsPage.vue';
 
 import VerificationPage from '../views/VerificationPage.vue';
 import EmergencyContactsPage from '../views/EmergencyContactsPage.vue';
@@ -97,6 +99,16 @@ const routes = [
                 path: 'profile',
                 name: 'profile',
                 component: ProfilePage
+            },
+            {
+                path: 'post-detail',
+                name: 'post-detail',
+                component: PostDetailPage
+            },
+            {
+                path: 'all-posts',
+                name: 'all-posts',
+                component: AllPostsPage
             },
 
             {

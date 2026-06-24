@@ -203,7 +203,7 @@ const activities = ref([
     cost: 380,
     status: '待出行',
     isOrganizer: false,
-    image: '/placeholder.svg?height=80&width=80'
+    image: '/src/assets/天生三桥景区.png'
   },
   {
     id: 2,
@@ -215,7 +215,7 @@ const activities = ref([
     cost: 220,
     status: '进行中',
     isOrganizer: true,
-    image: '/placeholder.svg?height=80&width=80'
+    image: '/src/assets/仙女山-天生三桥环线.png'
   },
   {
     id: 3,
@@ -227,7 +227,7 @@ const activities = ref([
     cost: 150,
     status: '已完成',
     isOrganizer: false,
-    image: '/placeholder.svg?height=80&width=80'
+    image: '/src/assets/濯水古镇-蒲花暗河环线.png'
   },
   {
     id: 4,
@@ -239,7 +239,7 @@ const activities = ref([
     cost: 280,
     status: '待确认',
     isOrganizer: true,
-    image: '/placeholder.svg?height=80&width=80'
+    image: '/src/assets/南川178环线.png'
   },
   {
     id: 5,
@@ -251,7 +251,7 @@ const activities = ref([
     cost: 880,
     status: '已取消',
     isOrganizer: false,
-    image: '/placeholder.svg?height=80&width=80'
+    image: '/src/assets/龚滩古镇-乌江画廊环线.png'
   },
   {
     id: 6,
@@ -263,7 +263,7 @@ const activities = ref([
     cost: 80,
     status: '退款中',
     isOrganizer: false,
-    image: '/placeholder.svg?height=80&width=80'
+    image: '/src/assets/神龟峡环线.png'
   }
 ])
 

@@ -260,10 +260,15 @@ onMounted(() => {
   display: flex;
   gap: 10px;
   margin-bottom: 16px;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: hidden;
 }
 
 .filter-select {
   flex: 1;
+  max-width: 100%;
+  width: 100%;
   padding: 8px 12px;
   padding-right: 30px;
   border-radius: 20px;
@@ -271,10 +276,17 @@ onMounted(() => {
   background-color: #fff;
   font-size: 14px;
   appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23666' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 12px center;
   outline: none;
+  box-sizing: border-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
 }
 
 /* 全景网格 */

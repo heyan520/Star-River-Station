@@ -14,7 +14,7 @@
     </div>
 
     <!-- 内容区域 -->
-    <div v-else>
+    <div v-else class="content-wrapper">
       <!-- 顶部导航栏 -->
       <div class="header">
         <button class="back-btn" @click="goBack">
@@ -195,6 +195,12 @@ onMounted(async () => {
   display: flex;
   flex-direction: column;
   box-sizing: border-box;
+}
+
+.content-wrapper {
+  display: flex;
+  flex-direction: column;
+  overflow: visible;
 }
 
 /* 加载状态样式 - 增强版 */
@@ -504,6 +510,8 @@ onMounted(async () => {
   box-sizing: border-box;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: visible;
+  z-index: 100;
 }
 
 .filter-item {
@@ -518,6 +526,7 @@ onMounted(async () => {
   position: relative;
   transition: all 0.2s ease;
   min-width: 0;
+  overflow: visible;
 }
 
 .filter-item:hover {
@@ -554,9 +563,10 @@ onMounted(async () => {
   border: 1px solid #ddd;
   border-radius: 8px;
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
+  z-index: 9999;
   margin-top: 4px;
   animation: slideDown 0.2s ease-out;
+  overflow: visible;
 }
 
 @keyframes slideDown {
@@ -601,6 +611,8 @@ onMounted(async () => {
   padding: 0 0 80px 0;
   background: #f5f5f5;
   width: 100%;
+  position: relative;
+  z-index: 1;
 }
 
 .campsite-card {
@@ -616,6 +628,7 @@ onMounted(async () => {
   width: calc(100% - 32px);
   position: relative;
   overflow: hidden;
+  z-index: 1;
 }
 
 .campsite-card:hover {
