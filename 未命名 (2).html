@@ -1,0 +1,968 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>户外旅游平台小程序UI设计 - 完整版（高德地图集成）</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            100: '#E8F5E9',
+                            200: '#C8E6C9',
+                            300: '#A5D6A7',
+                            400: '#81C784',
+                            500: '#4CAF50',
+                            600: '#43A047',
+                            700: '#388E3C',
+                        },
+                        secondary: {
+                            100: '#E3F2FD',
+                            200: '#BBDEFB',
+                            300: '#90CAF9',
+                            400: '#64B5F6',
+                            500: '#2196F3',
+                            600: '#1E88E5',
+                            700: '#1976D2',
+                        },
+                        accent: {
+                            500: '#FF9800'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap');
+        
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e8f5e9 100%);
+        }
+        
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            border: 12px solid #333;
+            border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            overflow: hidden;
+            position: relative;
+            background: white;
+        }
+        
+        .phone-top-bar {
+            height: 44px;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .capsule-btn {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 88px;
+            height: 30px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            color: #666;
+        }
+        .capsule-btn-right {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 88px;
+            height: 30px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+ 
+        }
+        
+        .card {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        
+        .tab-item {
+            transition: all 0.2s ease;
+            border-radius: 12px;
+            padding: 10px 16px;
+        }
+        
+        .tab-item.active {
+            background: rgba(76, 175, 80, 0.15);
+            color: #4CAF50;
+        }
+        
+        .btn {
+            transition: all 0.2s ease;
+            border-radius: 12px;
+            padding: 10px 16px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .progress-bar {
+            height: 8px;
+            border-radius: 4px;
+            background: #f0f0f0;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #81C784, #4CAF50);
+            border-radius: 4px;
+        }
+        
+        .map-container {
+            height: 200px;
+            background: #f0f9ff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .route-card {
+            border-left: 4px solid #4CAF50;
+        }
+        
+        .sos-btn {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f44336, #d32f2f);
+            box-shadow: 0 8px 20px rgba(244, 67, 54, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 1.5s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.4); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 10px rgba(244, 67, 54, 0); }
+            100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(244, 67, 54, 0); }
+        }
+        
+        .scroll-container {
+            scrollbar-width: thin;
+            scrollbar-color: #A5D6A7 transparent;
+        }
+        
+        .scroll-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .scroll-container::-webkit-scrollbar-thumb {
+            background-color: #A5D6A7;
+            border-radius: 3px;
+        }
+        
+        .avatar-ring {
+            border: 3px solid #4CAF50;
+        }
+        
+        .vr-preview {
+            height: 180px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #64B5F6, #1976D2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .vr-preview::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80') center/cover;
+            opacity: 0.7;
+        }
+        
+        .rating-stars {
+            color: #FFD700;
+        }
+        
+        .camp-level {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+        
+        .level-low {
+            background: #E8F5E9;
+            color: #4CAF50;
+        }
+        
+        .level-medium {
+            background: #FFF9C4;
+            color: #F57F17;
+        }
+        
+        .level-high {
+            background: #FFEBEE;
+            color: #C62828;
+        }
+        
+        .camp-theme {
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            background: #E3F2FD;
+            color: #1976D2;
+        }
+        .location-weather {
+            position: absolute;
+            top: 6px;
+            left: 10px;
+            z-index: 10;
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(5px);
+            border-radius: 20px;
+            padding: 6px 12px;
+            display: flex;
+            align-items: center;
+            font-size: 14px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        /* 导航栏样式 */
+        .tab-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: white;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            z-index: 100;
+        }
+        
+        .tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 10px;
+            transition: all 0.2s;
+        }
+        
+        .tab-item i {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+        
+        .tab-item.active {
+            color: #4CAF50;
+            background: transparent;
+        }
+        
+        /* 地图容器样式 */
+        .amap-container {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        .amap-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 10;
+        }
+        
+        .map-control-btn {
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 5px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            cursor: pointer;
+        }
+        
+        body {
+            font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #f0f9ff 0%, #e8f5e9 100%);
+        }
+        
+        .phone-frame {
+            width: 375px;
+            height: 812px;
+            border: 12px solid #333;
+            border-radius: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            overflow: hidden;
+            position: relative;
+            background: white;
+        }
+        
+        .phone-top-bar {
+            height: 44px;
+            background: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .capsule-btn {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 88px;
+            height: 30px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .capsule-btn-right {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 88px;
+            height: 30px;
+            background: #f0f0f0;
+            border-radius: 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+            color: #666;
+            cursor: pointer;
+        }
+        
+        .card {
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .tab-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 50px;
+            background: white;
+            border-top: 1px solid #f0f0f0;
+            display: flex;
+            z-index: 100;
+        }
+        
+        .tab-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 10px;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        
+        .tab-item i {
+            font-size: 20px;
+            margin-bottom: 3px;
+        }
+        
+        .tab-item.active {
+            color: #4CAF50;
+        }
+        
+        .scroll-container {
+            overflow-y: auto;
+            height: calc(100% - 44px - 50px);
+        }
+        
+        /* 发帖页面特有样式 */
+        .theme-item {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #f5f5f5;
+            color: #666;
+            font-size: 14px;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.3s ease;
+        }
+        
+        .theme-item.active {
+            background: #e8f5e9;
+            color: #4CAF50;
+            font-weight: 600;
+        }
+        
+        .sort-item {
+            padding: 6px 12px;
+            border-radius: 20px;
+            background: #f5f5f5;
+            color: #666;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .sort-item.active {
+            background: #4CAF50;
+            color: white;
+        }
+        
+        .post-card {
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            margin-bottom: 16px;
+            overflow: hidden;
+        }
+        
+        .post-tag {
+            display: inline-block;
+            padding: 4px 8px;
+            background: #e8f5e9;
+            color: #4CAF50;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        
+        .post-header {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+        }
+        
+        .avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin-right: 12px;
+        }
+        
+        .post-content {
+            padding: 0 12px 12px;
+        }
+        
+        .post-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        
+        .post-desc {
+            font-size: 14px;
+            color: #666;
+            line-height: 1.5;
+            margin-bottom: 12px;
+        }
+        
+        .post-images {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+        
+        .post-image {
+            height: 100px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .post-actions {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-top: 1px solid #f0f0f0;
+        }
+        
+        .action-btn {
+            display: flex;
+            align-items: center;
+            margin-right: 20px;
+            color: #666;
+            font-size: 13px;
+            cursor: pointer;
+        }
+        
+        .action-btn i {
+            font-size: 16px;
+            margin-right: 4px;
+        }
+        
+        .floating-post-btn {
+            position: absolute;
+            bottom: 70px;
+            right: 20px;
+            width: 56px;
+            height: 56px;
+            background: linear-gradient(135deg, #4CAF50 0%, #43A047 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+            cursor: pointer;
+            z-index: 90;
+            transition: all 0.3s ease;
+        }
+        
+        .floating-post-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.4);
+        }
+        
+        .search-box {
+            flex: 1;
+            height: 36px;
+            background: #f5f5f5;
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            padding: 0 16px;
+            margin: 0 12px;
+        }
+        
+        .search-box input {
+            border: none;
+            background: transparent;
+            outline: none;
+            flex: 1;
+            font-size: 14px;
+            color: #333;
+        }
+        
+        .search-box i {
+            color: #999;
+            margin-right: 8px;
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.3s ease-out;
+        }
+    
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+    <h1 class="text-3xl font-bold text-gray-800 mb-2">户外旅游平台小程序UI设计 - 完整版（高德地图集成）</h1>
+    <p class="text-gray-600 mb-8">九大核心页面 · 全面户外体验 · 沉浸式设计</p>
+    
+    <div class="flex flex-wrap gap-6 justify-center">
+        <!-- 1. 探索户外（首页） -->
+        <div class="phone-frame">
+            <div class="phone-top-bar">
+                <!-- 位置和天气 -->
+                <div class="location-weather">
+                    <i class="fas fa-location-dot text-primary-600 mr-1"></i>
+                    <span class="font-medium mr-3">武隆区</span>
+                    <i class="fas fa-sun text-yellow-400 mr-1"></i>
+                    <span>28°C</span>
+                </div>
+                <div class="capsule-btn">🔍搜索</div>
+            </div>
+            
+            <div class="p-5 h-[calc(100%-44px-50px)] overflow-y-auto scroll-container">
+                <!-- Banner -->
+                <div class="relative rounded-xl overflow-hidden mb-6 h-40">
+                    <div class="absolute inset-0 bg-gradient-to-r from-primary-500 to-secondary-500 opacity-90"></div>
+                    <div class="absolute inset-0 flex flex-col justify-center items-center text-white p-4">
+                        <h3 class="text-xl font-bold mb-2">发现自然之美</h3>
+                        <p class="text-center text-sm mb-4">精选徒步路线 · 露营基地 · 自驾游推荐</p>
+                        <button class="bg-white text-primary-600 px-4 py-2 rounded-full font-medium">开始探索</button>
+                    </div>
+                </div>
+                
+                <!-- 功能入口 -->
+                <div class="grid grid-cols-4 gap-4 mb-6">
+                    <div class="flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-primary-100 flex items-center justify-center mb-2">
+                            <i class="fas fa-route text-primary-600 text-xl"></i>
+                        </div>
+                        <span class="text-xs">路线规划</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center mb-2">
+                            <i class="fas fa-campground text-secondary-600 text-xl"></i>
+                        </div>
+                        <span class="text-xs">露营基地</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center mb-2">
+                            <i class="fas fa-car text-green-600 text-xl"></i>
+                        </div>
+                        <span class="text-xs">自驾路线</span>
+                    </div>
+                    <div class="flex flex-col items-center">
+                        <div class="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center mb-2">
+                            <i class="fas fa-users text-accent-500 text-xl"></i>
+                        </div>
+                        <span class="text-xs">社交组队</span>
+                    </div>
+                </div>
+                
+                <!-- 推荐路线 -->
+                <h3 class="text-lg font-bold mb-4">精选路线</h3>
+                <div class="grid grid-cols-2 gap-4 mb-6">
+                    <div class="card">
+                        <div class="h-32 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');">
+                        </div>
+                        <div class="p-3">
+                            <h4 class="font-bold mb-1">雪山徒步之旅</h4>
+                            <div class="flex items-center text-xs text-gray-500 mb-2">
+                                <i class="fas fa-mountain mr-1"></i>
+                                <span>中级难度 · 15公里</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-primary-600 font-medium">¥0</span>
+                                <span class="text-xs bg-green-100 text-green-600 px-2 py-1 rounded-full">免费</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="h-32 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1506905925346-21bda4d32df4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');">
+                        </div>
+                        <div class="p-3">
+                            <h4 class="font-bold mb-1">森林摄影路线</h4>
+                            <div class="flex items-center text-xs text-gray-500 mb-2">
+                                <i class="fas fa-camera mr-1"></i>
+                                <span>初级难度 · 8公里</span>
+                            </div>
+                            <div class="flex justify-between items-center">
+                                <span class="text-primary-600 font-medium">¥0</span>
+                                <span class="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">亲子推荐</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 热门露营地 -->
+                <h3 class="text-lg font-bold mb-4">热门露营地</h3>
+                <div class="flex overflow-x-auto gap-4 pb-3 mb-6">
+                    <div class="card flex-shrink-0 w-40">
+                        <div class="h-24 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1523987355523-c7b5b0dd90a7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');"></div>
+                        <div class="p-2">
+                            <h4 class="font-bold text-sm mb-1">山野星空营地</h4>
+                            <div class="flex gap-1 mb-1">
+                                <span class="camp-level level-medium">中级</span>
+                                <span class="camp-theme">摄影</span>
+                            </div>
+                            <div class="flex items-center text-xs text-gray-500">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <span>4.8 (128评价)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card flex-shrink-0 w-40">
+                        <div class="h-24 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1504851149312-7a075b496cc7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');"></div>
+                        <div class="p-2">
+                            <h4 class="font-bold text-sm mb-1">湖畔休闲营地</h4>
+                            <div class="flex gap-1 mb-1">
+                                <span class="camp-level level-low">初级</span>
+                                <span class="camp-theme">亲子</span>
+                            </div>
+                            <div class="flex items-center text-xs text-gray-500">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <span>4.5 (96评价)</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card flex-shrink-0 w-40">
+                        <div class="h-24 bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1487730116645-74489c95b41b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');"></div>
+                        <div class="p-2">
+                            <h4 class="font-bold text-sm mb-1">云端探险营地</h4>
+                            <div class="flex gap-1 mb-1">
+                                <span class="camp-level level-high">高级</span>
+                                <span class="camp-theme">徒步</span>
+                            </div>
+                            <div class="flex items-center text-xs text-gray-500">
+                                <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                <span>4.9 (204评价)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 活动预告 -->
+                <div class="card p-4 bg-gradient-to-r from-secondary-100 to-primary-100">
+                    <div class="flex items-center">
+                        <div class="bg-white p-3 rounded-lg mr-3">
+                            <i class="fas fa-calendar-alt text-secondary-600 text-xl"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold">周末露营活动</h4>
+                            <p class="text-sm text-gray-600">8月12日 · 重庆南山露营地</p>
+                        </div>
+                        <button class="ml-auto bg-secondary-500 text-white px-3 py-1 rounded-full text-sm">报名</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 底部导航栏 -->
+            <div class="tab-bar">
+                <div class="tab-item active">
+                    <i class="fas fa-home"></i>
+                    <span>首页</span>
+                </div>
+                <div class="tab-item">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>商城</span>
+                </div>
+                <div class="tab-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>附近</span>
+                </div>
+                <div class="tab-item">
+                    <i class="fas fa-user"></i>
+                    <span>我的</span>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 2. 自驾游路线列表页面 -->
+        <div class="phone-frame">
+            <div class="phone-top-bar">
+                <h2 class="font-bold text-lg">自驾游路线</h2>
+                <div class="capsule-btn-right">返回</div>
+                <div class="capsule-btn">🔍搜索</div>
+            </div>
+            
+            <div class="p-5 h-[calc(100%-44px-50px)] overflow-y-auto scroll-container">
+                <!-- 高德地图容器 -->
+                <div id="drivingRouteMap" class="map-container mb-6" style="position: relative;">
+                    <!-- 静态地图占位 -->
+                    <div class="w-full h-full flex items-center justify-center">
+                        <i class="fas fa-map-marked-alt text-secondary-500 text-4xl mb-4"></i>
+                        <div class="absolute text-center">
+                            <p class="text-gray-500">高德地图展示区域</p>
+                        </div>
+                    </div>
+                    <div class="amap-controls">
+                        <div class="map-control-btn" title="放大">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                        <div class="map-control-btn" title="缩小">
+                            <i class="fas fa-minus"></i>
+                        </div>
+                        <div class="map-control-btn" title="定位">
+                            <i class="fas fa-location-arrow"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 新增: 三合一下拉筛选组件 -->
+                <div class="grid grid-cols-3 gap-3 pb-4 mb-4">
+                    <!-- 分类筛选 -->
+                    <div class="relative">
+                        <select class="appearance-none w-full bg-gray-100 border border-gray-200 rounded-full px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <option selected>类型</option>
+                            <option>峡谷</option>
+                            <option>高山</option>
+                            <option>古镇</option>
+                            <option>特色</option>
+                            <option>郊区</option>
+                            <option>原始</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- 时长筛选 -->
+                    <div class="relative">
+                        <select class="appearance-none w-full bg-gray-100 border border-gray-200 rounded-full px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <option selected>时长</option>
+                            <option>1日游</option>
+                            <option>2-3日</option>
+                            <option>5日以上</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- 等级筛选 -->
+                    <div class="relative">
+                        <select class="appearance-none w-full bg-gray-100 border border-gray-200 rounded-full px-4 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <option selected>等级</option>
+                            <option>休闲</option>
+                            <option>综合</option>
+                            <option>挑战</option>
+                            <option>极限</option>
+                        </select>
+                        <div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-700">
+                            <i class="fas fa-chevron-down text-sm"></i>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 自驾路线列表 -->
+                <div class="space-y-4">
+                    <div class="card">
+                        <div class="flex">
+                            <div class="w-32 h-32 bg-cover" style="background-image: url('https://images.unsplash.com/photo-1503376780353-7e6692767b70?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');"></div>
+                            <div class="flex-1 p-3">
+                                <h4 class="font-bold mb-1">318川藏线精华段</h4>
+                                <div class="flex gap-1 mb-2">
+                                    <span class="camp-level level-high">挑战级</span>
+                                    <span class="camp-theme">山区</span>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-2">中国最美公路之一，穿越高山峡谷，体验多样地貌</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <i class="fas fa-road mr-1"></i>
+                                        <span class="mr-3">1200公里</span>
+                                        <i class="fas fa-clock mr-1"></i>
+                                        <span>5-7天</span>
+                                    </div>
+                                    <button class="bg-primary-500 text-white px-3 py-1 rounded-lg text-sm">查看详情</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="flex">
+                            <div class="w-32 h-32 bg-cover" style="background-image: url('https://images.unsplash.com/photo-1502602898657-3e91760cbb34?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');"></div>
+                            <div class="flex-1 p-3">
+                                <h4 class="font-bold mb-1">环海南岛海岸线</h4>
+                                <div class="flex gap-1 mb-2">
+                                    <span class="camp-level level-low">休闲级</span>
+                                    <span class="camp-theme">沿海</span>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-2">阳光沙滩与热带风情，体验海岛慢生活</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <i class="fas fa-road mr-1"></i>
+                                        <span class="mr-3">800公里</span>
+                                        <i class="fas fa-clock mr-1"></i>
+                                        <span>3-5天</span>
+                                    </div>
+                                    <button class="bg-primary-500 text-white px-3 py-1 rounded-lg text-sm">查看详情</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="flex">
+                            <div class="w-32 h-32 bg-cover" style="background-image: url('https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=800&q=80');"></div>
+                            <div class="flex-1 p-3">
+                                <h4 class="font-bold mb-1">江南古镇水乡游</h4>
+                                <div class="flex gap-1 mb-2">
+                                    <span class="camp-level level-medium">舒适级</span>
+                                    <span class="camp-theme">乡村</span>
+                                </div>
+                                <p class="text-sm text-gray-500 mb-2">穿越江南六大古镇，感受水乡韵味与历史人文</p>
+                                <div class="flex justify-between items-center">
+                                    <div class="flex items-center text-sm text-gray-500">
+                                        <i class="fas fa-road mr-1"></i>
+                                        <span class="mr-3">600公里</span>
+                                        <i class="fas fa-clock mr-1"></i>
+                                        <span>4-6天</span>
+                                    </div>
+                                    <button class="bg-primary-500 text-white px-3 py-1 rounded-lg text-sm">查看详情</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 底部导航栏 -->
+            <div class="tab-bar">
+                <div class="tab-item">
+                    <i class="fas fa-home"></i>
+                    <span>首页</span>
+                </div>
+                <div class="tab-item">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>商城</span>
+                </div>
+                <div class="tab-item active">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>附近</span>
+                </div>
+                <div class="tab-item">
+                    <i class="fas fa-user"></i>
+                    <span>我的</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
